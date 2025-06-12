@@ -1,0 +1,86 @@
+[
+  {
+    "name": "신정",
+    "type": "fixed",
+    "month": 1,
+    "day": 1
+  },
+  {
+    "name": "구정",
+    "type": "lunar",
+    "month": 1,
+    "day": 1
+  },
+  {
+    "name": "3·1절",
+    "type": "fixed",
+    "month": 3,
+    "day": 1
+  },
+  {
+    "name": "근로자의 날",
+    "type": "fixed",
+    "month": 5,
+    "day": 1
+  },
+  {
+    "name": "석가탄신일",
+    "type": "lunar",
+    "month": 4,
+    "day": 8
+  },
+  {
+    "name": "어린이날",
+    "type": "fixed",
+    "month": 5,
+    "day": 5
+  },
+  {
+    "name": "현충일",
+    "type": "fixed",
+    "month": 6,
+    "day": 6
+  },
+  {
+    "name": "광복절",
+    "type": "fixed",
+    "month": 8,
+    "day": 15
+  },
+  {
+    "name": "추석 연휴",
+    "type": "lunar",
+    "month": 8,
+    "day": 14
+  },
+  {
+    "name": "추석",
+    "type": "lunar",
+    "month": 8,
+    "day": 15
+  },
+  {
+    "name": "추석 연휴",
+    "type": "lunar",
+    "month": 8,
+    "day": 16
+  },
+  {
+    "name": "개천절",
+    "type": "fixed",
+    "month": 10,
+    "day": 3
+  },
+  {
+    "name": "한글날",
+    "type": "fixed",
+    "month": 10,
+    "day": 9
+  },
+  {
+    "name": "성탄절",
+    "type": "fixed",
+    "month": 12,
+    "day": 25
+  }
+]

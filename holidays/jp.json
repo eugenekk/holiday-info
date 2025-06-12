@@ -1,0 +1,90 @@
+[
+  {
+    "name": "New Year’s Day",
+    "type": "fixed",
+    "month": 1,
+    "day": 1
+  },
+  {
+    "name": "National Foundation Day",
+    "type": "fixed",
+    "month": 2,
+    "day": 11
+  },
+  {
+    "name": "Emperor’s Birthday",
+    "type": "fixed",
+    "month": 2,
+    "day": 23
+  },
+  {
+    "name": "Showa Day",
+    "type": "fixed",
+    "month": 4,
+    "day": 29
+  },
+  {
+    "name": "Constitution Memorial Day",
+    "type": "fixed",
+    "month": 5,
+    "day": 3
+  },
+  {
+    "name": "Greenery Day",
+    "type": "fixed",
+    "month": 5,
+    "day": 4
+  },
+  {
+    "name": "Children’s Day",
+    "type": "fixed",
+    "month": 5,
+    "day": 5
+  },
+  {
+    "name": "Mountain Day",
+    "type": "fixed",
+    "month": 8,
+    "day": 11
+  },
+  {
+    "name": "Culture Day",
+    "type": "fixed",
+    "month": 11,
+    "day": 3
+  },
+  {
+    "name": "Labor Thanksgiving Day",
+    "type": "fixed",
+    "month": 11,
+    "day": 23
+  },
+  {
+    "name": "Coming of Age Day",
+    "type": "weekday",
+    "month": 1,
+    "week": 2,
+    "weekday": 1
+  },
+  {
+    "name": "Marine Day",
+    "type": "weekday",
+    "month": 7,
+    "week": 3,
+    "weekday": 1
+  },
+  {
+    "name": "Respect for the Aged Day",
+    "type": "weekday",
+    "month": 9,
+    "week": 3,
+    "weekday": 1
+  },
+  {
+    "name": "Sports Day",
+    "type": "weekday",
+    "month": 10,
+    "week": 2,
+    "weekday": 1
+  }
+]

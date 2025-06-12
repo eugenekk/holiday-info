@@ -1,0 +1,32 @@
+[
+  {
+    "name": "New Year's Day",
+    "type": "fixed",
+    "month": 1,
+    "day": 1
+  },
+  {
+    "name": "Australia Day",
+    "type": "fixed",
+    "month": 1,
+    "day": 26
+  },
+  {
+    "name": "Anzac Day",
+    "type": "fixed",
+    "month": 4,
+    "day": 25
+  },
+  {
+    "name": "Christmas Day",
+    "type": "fixed",
+    "month": 12,
+    "day": 25
+  },
+  {
+    "name": "Boxing Day",
+    "type": "fixed",
+    "month": 12,
+    "day": 26
+  }
+]

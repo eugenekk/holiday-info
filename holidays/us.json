@@ -1,0 +1,74 @@
+[
+  {
+    "name": "New Year’s Day",
+    "type": "fixed",
+    "month": 1,
+    "day": 1
+  },
+  {
+    "name": "Martin Luther King Jr. Day",
+    "type": "weekday",
+    "month": 1,
+    "week": 3,
+    "weekday": 1
+  },
+  {
+    "name": "Presidents’ Day",
+    "type": "weekday",
+    "month": 2,
+    "week": 3,
+    "weekday": 1
+  },
+  {
+    "name": "Memorial Day",
+    "type": "weekday",
+    "month": 5,
+    "week": -1,
+    "weekday": 1
+  },
+  {
+    "name": "Juneteenth National Independence Day",
+    "type": "fixed",
+    "month": 6,
+    "day": 19
+  },
+  {
+    "name": "Independence Day",
+    "type": "fixed",
+    "month": 7,
+    "day": 4
+  },
+  {
+    "name": "Labor Day",
+    "type": "weekday",
+    "month": 9,
+    "week": 1,
+    "weekday": 1
+  },
+  {
+    "name": "Columbus Day",
+    "type": "weekday",
+    "month": 10,
+    "week": 2,
+    "weekday": 1
+  },
+  {
+    "name": "Veterans Day",
+    "type": "fixed",
+    "month": 11,
+    "day": 11
+  },
+  {
+    "name": "Thanksgiving Day",
+    "type": "weekday",
+    "month": 11,
+    "week": 4,
+    "weekday": 4
+  },
+  {
+    "name": "Christmas Day",
+    "type": "fixed",
+    "month": 12,
+    "day": 25
+  }
+]

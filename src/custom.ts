@@ -1,11 +1,3 @@
-// 커스텀 공휴일 관리
-import usHolidays from '../holidays/us.json';
-import jpHolidays from '../holidays/jp.json';
-import krHolidays from '../holidays/kr.json';
-import auHolidays from '../holidays/au.json';
-import sgHolidays from '../holidays/sg.json';
-import { HolidayRule } from './types';
-
 export interface CustomHolidayRule {
   name: string;
   type: 'fixed';      // 커스텀 공휴일은 fixed만 허용

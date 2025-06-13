@@ -2,7 +2,6 @@
 
 import { parseISO, format } from "date-fns";
 import { lunar2solar } from 'solarlunar'; // npm install solarlunar
-import { easter } from 'date-easter'; // npm install date-easter
 import usHolidays from '../holidays/us.json';
 import jpHolidays from '../holidays/jp.json';
 import krHolidays from '../holidays/kr.json';
@@ -10,7 +9,7 @@ import auHolidays from '../holidays/au.json';
 import sgHolidays from '../holidays/sg.json';
 import { _getCustomHolidaysForUtils, customHolidays } from './custom';
 import { hijriToGregorian, gregorianToHijri } from './hijri';
-import { Holiday, HolidayRule } from './types';
+import {  HolidayRule } from './types';
 import { 
   getUSObservedDates,
   getJPSubstituteDates,

@@ -1,5 +1,4 @@
 import { format, parseISO } from 'date-fns';
-import { CustomHolidayRule } from './custom';
 
 /**
  * 1) US 규칙에 따른 Observed Holiday 날짜 반환 (배열)

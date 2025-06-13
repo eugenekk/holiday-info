@@ -1,5 +1,4 @@
 import { format } from 'date-fns';
-import { lunar2solar } from 'solarlunar';
 import { easter } from 'date-easter';
 
 /**

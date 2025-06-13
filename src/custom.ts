@@ -17,7 +17,17 @@ const customHolidays = new Map<string, CustomHolidayRule[]>();
  * 커스텀 공휴일 설정 함수
  * 참고: 커스텀 공휴일은 고정일(fixed) 타입만 지원합니다.
  */
-export function setCustomHoliday(holiday: CustomHolidayRule, country: string = 'kr'): void {
+export function setCustomHoliday(holiday: CustomHolidayRule | undefined, country: string = 'kr'): void {
+  const countryKey = country.toLowerCase();
+  
+  // holiday가 undefined면 해당 날짜의 커스텀 휴일을 제거
+  if (holiday === undefined) {
+    if (customHolidays.has(countryKey)) {
+      customHolidays.set(countryKey, []);
+    }
+    return;
+  }
+
   // 유효성 검사: recurring=false일 때는 year가 반드시 있어야 함
   if (holiday.recurring === false && holiday.year === undefined) {
     throw new Error('일회성 공휴일(recurring: false)을 설정할 때는 year를 반드시 지정해야 합니다.');
@@ -30,7 +40,6 @@ export function setCustomHoliday(holiday: CustomHolidayRule, country: string = '
     type: 'fixed' as const  // 항상 fixed 타입으로 처리
   };
 
-  const countryKey = country.toLowerCase();
   if (!customHolidays.has(countryKey)) {
     customHolidays.set(countryKey, []);
   }

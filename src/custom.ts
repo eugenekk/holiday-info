@@ -34,7 +34,15 @@ export function setCustomHoliday(holiday: CustomHolidayRule, country: string = '
   if (!customHolidays.has(countryKey)) {
     customHolidays.set(countryKey, []);
   }
-  customHolidays.get(countryKey)!.push(normalizedHoliday);
+
+  // 같은 날짜의 기존 커스텀 휴일 제거
+  const existingHolidays = customHolidays.get(countryKey)!;
+  const filteredHolidays = existingHolidays.filter(h => 
+    !(h.month === normalizedHoliday.month && h.day === normalizedHoliday.day)
+  );
+  
+  // 새로운 휴일 추가
+  customHolidays.set(countryKey, [...filteredHolidays, normalizedHoliday]);
 }
 
 /**

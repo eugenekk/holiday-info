@@ -1,5 +1,5 @@
-declare module 'hijri-date' {
-  class HijriDate {
+declare module 'hijri-date/lib/safe' {
+  export class HijriDate {
     constructor(year: number, month: number, day: number);
     constructor(date: Date);
     toGregorian(): Date;
@@ -7,5 +7,8 @@ declare module 'hijri-date' {
     getMonth(): number;
     getDate(): number;
   }
-  export = HijriDate;
+
+  export function toHijri(date: Date): { year: number; month: number; day: number };
+  
+  export default HijriDate;
 } 

@@ -1,6 +1,6 @@
 {
   "name": "holiday-info",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "공휴일 정보를 제공하는 라이브러리",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

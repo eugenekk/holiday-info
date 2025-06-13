@@ -248,6 +248,134 @@ describe('호주 공휴일 테스트', () => {
 });
 
 // ---------------------------
+// 싱가포르 공휴일 테스트 (SG)
+// ---------------------------
+describe('싱가포르 공휴일 테스트', () => {
+  // 2025년 고정 공휴일
+  test('2025-01-01 (New Year Day) → true', () => {
+    expect(isHoliday('sg', '2025-01-01')).toBe(true);
+  });
+
+  test('2025-05-01 (Labour Day) → true', () => {
+    expect(isHoliday('sg', '2025-05-01')).toBe(true);
+  });
+
+  test('2025-08-09 (National Day) → true', () => {
+    expect(isHoliday('sg', '2025-08-09')).toBe(true);
+  });
+
+  test('2025-12-25 (Christmas Day) → true', () => {
+    expect(isHoliday('sg', '2025-12-25')).toBe(true);
+  });
+
+  // 2025년 음력 공휴일
+  test('2025-01-29 (Chinese New Year Day) → true', () => {
+    // 음력 1월 1일 = 2025년 1월 29일
+    expect(isHoliday('sg', '2025-01-29')).toBe(true);
+  });
+
+  test('2025-05-12 (Vesak Day) → true', () => {
+    // 음력 4월 15일 = 2025년 5월 12일
+    expect(isHoliday('sg', '2025-05-12')).toBe(true);
+  });
+
+  // 2025년 특별 공휴일 (type: "")
+  test('2025-03-31 (Hari Raya Puasa) → true', () => {
+    expect(isHoliday('sg', '2025-03-31')).toBe(true);
+  });
+
+  // 2025년 부활절 관련 공휴일 (부활절: 2025-04-20)
+  test('2025-04-18 (Good Friday) → true', () => {
+    // 부활절 2일 전 금요일
+    expect(isHoliday('sg', '2025-04-18')).toBe(true);
+  });
+
+  test('2025-04-19 (Easter Saturday) → false', () => {
+    // 싱가포르는 부활절 당일과 전후일은 공휴일이 아님
+    expect(isHoliday('sg', '2025-04-19')).toBe(false);
+  });
+
+  test('2025-04-20 (Easter Sunday) → false', () => {
+    // 싱가포르는 부활절 당일과 전후일은 공휴일이 아님
+    expect(isHoliday('sg', '2025-04-20')).toBe(false);
+  });
+
+  test('2025-04-21 (Easter Monday) → false', () => {
+    // 싱가포르는 부활절 당일과 전후일은 공휴일이 아님
+    expect(isHoliday('sg', '2025-04-21')).toBe(false);
+  });
+
+  test('2025-06-07 (Hari Raya Haji) → true', () => {
+    expect(isHoliday('sg', '2025-06-07')).toBe(true);
+  });
+
+  test('2025-10-20 (Deepavali) → true', () => {
+    expect(isHoliday('sg', '2025-10-20')).toBe(true);
+  });
+
+  // 대체휴일 테스트 - 2025년에는 일요일 공휴일이 없으므로 대체휴일 없음
+  test('2025-08-10 (National Day 다음날) → false', () => {
+    // 2025-08-09는 토요일이므로 대체휴일 없음 (토요일은 대체휴일 적용 안됨)
+    expect(isHoliday('sg', '2025-08-10')).toBe(false);
+  });
+
+  // 평일 테스트
+  test('2025-01-02 (평일) → false', () => {
+    expect(isHoliday('sg', '2025-01-02')).toBe(false);
+  });
+
+  test('2025-07-15 (평일) → false', () => {
+    expect(isHoliday('sg', '2025-07-15')).toBe(false);
+  });
+
+  test('2025-11-11 (평일) → false', () => {
+    expect(isHoliday('sg', '2025-11-11')).toBe(false);
+  });
+
+  // 2026년 부활절 관련 공휴일 (부활절: 2026-04-05)
+  test('2026-04-03 (Good Friday) → true', () => {
+    // 부활절 2일 전 금요일
+    expect(isHoliday('sg', '2026-04-03')).toBe(true);
+  });
+
+  test('2026-04-04 (Easter Saturday) → false', () => {
+    // 싱가포르는 부활절 당일과 전후일은 공휴일이 아님
+    expect(isHoliday('sg', '2026-04-04')).toBe(false);
+  });
+
+  test('2026-04-05 (Easter Sunday) → false', () => {
+    // 싱가포르는 부활절 당일과 전후일은 공휴일이 아님
+    expect(isHoliday('sg', '2026-04-05')).toBe(false);
+  });
+
+  test('2026-04-06 (Easter Monday) → false', () => {
+    // 싱가포르는 부활절 당일과 전후일은 공휴일이 아님
+    expect(isHoliday('sg', '2026-04-06')).toBe(false);
+  });
+
+  // 2027년 부활절 관련 공휴일 (부활절: 2027-03-28)
+  test('2027-03-26 (Good Friday) → true', () => {
+    // 부활절 2일 전 금요일
+    expect(isHoliday('sg', '2027-03-26')).toBe(true);
+  });
+
+  test('2027-03-27 (Easter Saturday) → false', () => {
+    // 싱가포르는 부활절 당일과 전후일은 공휴일이 아님
+    expect(isHoliday('sg', '2027-03-27')).toBe(false);
+  });
+
+  test('2027-03-28 (Easter Sunday) → false', () => {
+    // 싱가포르는 부활절 당일과 전후일은 공휴일이 아님
+    expect(isHoliday('sg', '2027-03-28')).toBe(false);
+  });
+
+  test('2027-03-29 (Easter Monday) → false', () => {
+    // 싱가포르는 부활절 당일과 전후일은 공휴일이 아님
+    expect(isHoliday('sg', '2027-03-29')).toBe(false);
+  });
+});
+
+// ---------------------------
 // 한국 공휴일 테스트 (KR)
 // ---------------------------
 describe('한국 공휴일 테스트 (KR)', () => {

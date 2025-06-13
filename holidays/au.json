@@ -28,5 +28,21 @@
     "type": "fixed",
     "month": 12,
     "day": 26
+  },
+  {
+    "name": "Good Friday",
+    "type": "special"
+  },
+  {
+    "name": "Easter Saturday",
+    "type": "special"
+  },
+  {
+    "name": "Easter Sunday",
+    "type": "special"
+  },
+  {
+    "name": "Easter Monday",
+    "type": "special"
   }
 ]

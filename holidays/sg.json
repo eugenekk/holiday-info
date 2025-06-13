@@ -1,0 +1,52 @@
+[
+  {
+    "name": "New Year's Day",
+    "type": "fixed",
+    "month": 1,
+    "day": 1
+  },
+
+  {
+    "name": "Hari Raya Puasa",
+    "type": "",
+    "month": 3,
+    "day": 31
+  },
+  {
+    "name": "Good Friday",
+    "type": "special"
+  },
+  {
+    "name": "Labour Day",
+    "type": "fixed",
+    "month": 5,
+    "day": 1
+  },
+
+  {
+    "name": "Hari Raya Haji",
+    "type": "hijri",
+    "hijriMonth": 12,
+    "hijriDay": 10,
+    "expectMonth": 5,
+    "expectDay": 15
+  },
+  {
+    "name": "National Day",
+    "type": "fixed",
+    "month": 8,
+    "day": 9
+  },
+  {
+    "name": "Deepavali",
+    "type": "",
+    "month": 10,
+    "day": 20
+  },
+  {
+    "name": "Christmas Day",
+    "type": "fixed",
+    "month": 12,
+    "day": 25
+  }
+]

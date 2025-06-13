@@ -16,8 +16,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/chai": "^5.2.2",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.15.18",
+    "chai": "^5.2.0",
     "dotenv": "^16.5.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.3.4",
@@ -26,6 +28,7 @@
   "dependencies": {
     "date-easter": "^1.0.3",
     "date-fns": "^4.1.0",
+    "hijri-date": "^0.2.2",
     "solarlunar": "^2.0.7"
   }
 }

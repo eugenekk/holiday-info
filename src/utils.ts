@@ -7,16 +7,23 @@ import usHolidays from '../holidays/us.json';
 import jpHolidays from '../holidays/jp.json';
 import krHolidays from '../holidays/kr.json';
 import auHolidays from '../holidays/au.json';
+import sgHolidays from '../holidays/sg.json';
 import { _getCustomHolidaysForUtils } from './custom';
+import { hijriToGregorian, gregorianToHijri } from './hijri';
+import { Holiday } from './types';
 
 
 interface HolidayRule {
   name: string;
-  type: 'fixed' | 'weekday' | 'lunar'; // type: "fixed" (양력 고정), "weekday" (요일제), "lunar" (음력)
-  month: number;
+  type: 'fixed' | 'weekday' | 'lunar' | 'special' | 'hijri' | ''; // type: "fixed" (양력 고정), "weekday" (요일제), "lunar" (음력), "special" (동적 계산), "hijri" (히즈리력), "" (특별 처리)
+  month?: number;     // type="special"인 경우 없을 수 있음
   day?: number;       // type="fixed" 일 때만 존재
   week?: number;      // type="weekday" 일 때만 존재
   weekday?: number;   // type="weekday": 1=월요일, …, 7=일요일
+  hijriMonth?: number; // 히즈리력 월 (1~12)
+  hijriDay?: number;   // 히즈리력 일 (1~30)
+  expectMonth?: number; // 예상 그레고리력 월 (0-based)
+  expectDay?: number;   // 예상 그레고리력 일 (1~31)
 }
 
 
@@ -37,6 +44,9 @@ function getRulesForCountry(country: string, year?: number): HolidayRule[] {
       break;
     case 'au':
       baseRules = auHolidays as HolidayRule[];
+      break;
+    case 'sg':
+      baseRules = sgHolidays as HolidayRule[];
       break;
     default:
       throw new Error(`지원하지 않는 country 코드: ${country}`);
@@ -68,14 +78,14 @@ function getRulesForCountry(country: string, year?: number): HolidayRule[] {
 function computeRuleDate(rule: HolidayRule, year: number): Date {
   if (rule.type === 'fixed') {
     // 고정 날짜 → 바로 Date 생성 (month-1, day)
-    return new Date(year, rule.month - 1, rule.day!);
+    return new Date(year, rule.month! - 1, rule.day!);
   } else if( rule.type === 'weekday') {
     // 요일제 날짜
     // rule.weekday: 1=월, …, 7=일 (JS Date.getDay(): 0=일, 1=월, …, 6=토)
     const targetJsWeekday = rule.weekday! % 7; // 7→0(일요일)
 
     // 해당 달의 1일
-    const firstOfMonth = new Date(year, rule.month - 1, 1);
+    const firstOfMonth = new Date(year, rule.month! - 1, 1);
     const firstDayOfWeek = firstOfMonth.getDay(); // 0=일,1=월,…,6=토
 
     let dateNum: number;
@@ -86,18 +96,30 @@ function computeRuleDate(rule: HolidayRule, year: number): Date {
     } else {
       // rule.week === -1 (마지막 주)
       // 우선 그 달 마지막 날짜 구하기
-      const lastOfMonth = new Date(year, rule.month, 0); // 0 = 이전 달 마지막 날
+      const lastOfMonth = new Date(year, rule.month!, 0); // 0 = 이전 달 마지막 날
       const lastDayOfWeek = lastOfMonth.getDay(); // 0=일,1=월,…,6=토
       // lag = (lastDayOfWeek - targetJsWeekday + 7)%7 
       const lag = (lastDayOfWeek - targetJsWeekday + 7) % 7;
       dateNum = lastOfMonth.getDate() - lag;
     }
-    return new Date(year, rule.month - 1, dateNum);
-  } else {
-    // type === 'lunar' (KR)
+    return new Date(year, rule.month! - 1, dateNum);
+  } else if (rule.type === 'lunar') {
+    // type === 'lunar' (KR, SG)
     // lunar2solar(year, 월, 일) → { cYear, cMonth, cDay }
-    const { cYear, cMonth, cDay } = lunar2solar(year, rule.month, rule.day!);
+    const { cYear, cMonth, cDay } = lunar2solar(year, rule.month!, rule.day!);
     return new Date(cYear, cMonth - 1, cDay);
+  } else if (rule.type === 'special') {
+    // type === 'special' - 동적 계산이 필요한 공휴일 (부활절 등)
+    // 별도 처리하므로 여기서는 에러 발생
+    throw new Error(`Special holiday "${rule.name}" should be handled separately`);
+  } else if (rule.type === 'hijri') {
+    // type === 'hijri' - 히즈리력 변환이 필요한 공휴일
+    // 별도 처리하므로 여기서는 에러 발생
+    throw new Error(`Hijri holiday "${rule.name}" should be handled separately`);
+  } else {
+    // type === '' (빈 스트링) - 특별 처리가 필요한 공휴일
+    // 현재는 고정 날짜로 처리 (향후 이슬람력, 힌두력 등 추가 가능)
+    return new Date(year, rule.month! - 1, rule.day!);
   }
 }
 
@@ -189,6 +211,43 @@ function getAUSubstituteDates(
       
       // 평일이고 기존 공휴일과 겹치지 않으면 확정
       if (!baseHolidays[obsKey] && !isWeekend) {
+        result.push(new Date(observed));
+        break;
+      }
+      
+      // 겹치거나 주말이면 하루 더 밀기
+      observed.setDate(observed.getDate() + 1);
+    }
+  }
+
+  return result;
+}
+
+/**
+ * 4) SG 규칙에 따른 대체공휴일 날짜 반환 (배열)
+ * 일요일이 공휴일이면 다음날 월요일
+ * 대체일이 또 다른 공휴일과 겹치면 그 다음 평일까지 밀림
+ * 토요일 공휴일은 대체휴일 지정 안함
+ */
+function getSGSubstituteDates(
+  baseHolidays: Record<string, string>, // { '2025-01-01': 'New Year', ... } 형태
+  holidayDate: Date
+): Date[] {
+  const result: Date[] = [];
+  const dow = holidayDate.getDay();
+
+  // 일요일(0)인 경우만 대체공휴일 지정
+  if (dow === 0) {
+    const observed = new Date(holidayDate);
+    observed.setDate(observed.getDate() + 1);
+    
+    // 만약 다음날도 이미 다른 공휴일이라면, 계속 다음 평일까지 밀기
+    while (true) {
+      const key = format(observed, 'yyyy-MM-dd');
+      const isWeekend = observed.getDay() === 0 || observed.getDay() === 6;
+      
+      // 평일이고 기존 공휴일과 겹치지 않으면 확정
+      if (!baseHolidays[key] && !isWeekend) {
         result.push(new Date(observed));
         break;
       }
@@ -323,6 +382,21 @@ function addAustralianEasterEntries(baseMap: Record<string, string>, year: numbe
   baseMap[easterMondayKey] = 'Easter Monday';
 }
 
+/**
+ * 싱가포르 부활절 관련 공휴일을 baseMap에 추가
+ * Good Friday 하루만 공휴일 (부활절 당일과 전후일은 공휴일 아님)
+ */
+function addSingaporeEasterEntries(baseMap: Record<string, string>, year: number) {
+  const easterData = easter(year); // { year: 2025, month: 3, day: 20 } (month는 0-based가 아님)
+  const easterDate = new Date(easterData.year, easterData.month - 1, easterData.day); // month를 0-based로 변환
+  
+  // Good Friday: 부활절 2일 전 (금요일)
+  const goodFriday = new Date(easterDate);
+  goodFriday.setDate(goodFriday.getDate() - 2);
+  const goodFridayKey = format(goodFriday, 'yyyy-MM-dd');
+  baseMap[goodFridayKey] = 'Good Friday';
+}
+
 function addLunarNewYearEntries(baseMap: Record<string, string>, date: Date, name: string) {
   // 한국의 설날 연휴는 음력 1월 1일을 기준으로 전날-당일-다음날 총 3일
   // 하지만 공식적인 "설날"은 가운데 날(당일)이 아니라 일요일이 아닌 날로 조정될 수 있음
@@ -412,12 +486,29 @@ export function isHoliday(country: string, input: string | Date): boolean {
     if (rule.type === 'lunar' && rule.month === 1 && rule.day === 1) {
       continue;
     }
-
+    // type이 'special'인 경우는 별도 헬퍼 함수로 처리하므로 건너뛰기
+    if (rule.type === 'special') {
+      continue;
+    }
+    // type이 'hijri'인 경우는 단순화된 구조로 처리
+    if (rule.type === 'hijri' && rule.hijriMonth && rule.hijriDay && rule.expectMonth !== undefined && rule.expectDay !== undefined) {
+      // 예상일로 히즈리 연도 추정
+      const approxDate = new Date(year, rule.expectMonth - 1, rule.expectDay);
+      const { year: hijriYear } = gregorianToHijri(approxDate);
+      // 히즈리력 → 그레고리력 변환
+      const hijriDate = hijriToGregorian(hijriYear, rule.hijriMonth, rule.hijriDay);
+      const hijriKey = format(hijriDate, 'yyyy-MM-dd');
+      if (baseHolidaysMap[hijriKey]) {
+        baseHolidaysMap[hijriKey] = baseHolidaysMap[hijriKey] + ' + ' + rule.name;
+      } else {
+        baseHolidaysMap[hijriKey] = rule.name;
+      }
+      continue;
+    }
+    // 나머지 일반 규칙 처리
     const hd = computeRuleDate(rule, year);
     const hKey = format(hd, 'yyyy-MM-dd');
-
     if (baseHolidaysMap[hKey]) {
-      // 이미 같은 날짜에 이름이 있으면, "이전 + 현재"로 합치기
       baseHolidaysMap[hKey] = baseHolidaysMap[hKey] + ' + ' + rule.name;
     } else {
       baseHolidaysMap[hKey] = rule.name;
@@ -436,6 +527,24 @@ export function isHoliday(country: string, input: string | Date): boolean {
   // (3) AU인 경우, 부활절 관련 4개 공휴일을 헬퍼로 추가
   if (country.toLowerCase() === 'au') {
     addAustralianEasterEntries(baseHolidaysMap, year);
+  }
+
+  // (4) SG인 경우, 음력 공휴일들과 부활절 관련 공휴일 추가 처리
+  if (country.toLowerCase() === 'sg') {
+    // Chinese New Year Day (음력 1월 1일) 추가
+    const { cYear: cnyYear, cMonth: cnyMonth, cDay: cnyDay } = lunar2solar(year, 1, 1);
+    const chineseNewYearDate = new Date(cnyYear, cnyMonth - 1, cnyDay);
+    const chineseNewYearKey = format(chineseNewYearDate, 'yyyy-MM-dd');
+    baseHolidaysMap[chineseNewYearKey] = 'Chinese New Year\'s Day';
+
+    // Vesak Day (음력 4월 15일) 추가
+    const { cYear: vesakYear, cMonth: vesakMonth, cDay: vesakDay } = lunar2solar(year, 4, 15);
+    const vesakDate = new Date(vesakYear, vesakMonth - 1, vesakDay);
+    const vesakKey = format(vesakDate, 'yyyy-MM-dd');
+    baseHolidaysMap[vesakKey] = 'Vesak Day';
+    
+    // Good Friday (부활절 기반) 추가
+    addSingaporeEasterEntries(baseHolidaysMap, year);
   }
 
   // (2) 실제 기념일인지 체크
@@ -550,6 +659,34 @@ export function isHoliday(country: string, input: string | Date): boolean {
         // 호주는 토요일/일요일 → 다음 평일로 이동 (겹치면 순차적으로 밀기)
         if (!isNoSubstituteCustomHoliday) {
           const subs = getAUSubstituteDates(baseHolidaysMap, hd);
+          for (const s of subs) {
+            if (format(s, 'yyyy-MM-dd') === key) return true;
+          }
+        }
+      }
+      break;
+
+    case 'sg':
+      for (const [hKey] of Object.entries(baseHolidaysMap)) {
+        const hd = parseISO(hKey);
+        
+        // 이 날짜가 substituteHoliday: false인 커스텀 공휴일인지 확인
+        const isNoSubstituteCustomHoliday = customRules.some(cr => {
+          if (cr.substituteHoliday === false) {
+            // recurring 필터링
+            if (cr.recurring === false && cr.year !== year) {
+              return false;
+            }
+            const customHolidayDate = new Date(year, cr.month - 1, cr.day);
+            return format(customHolidayDate, 'yyyy-MM-dd') === hKey;
+          }
+          return false;
+        });
+        
+        // substituteHoliday: false인 커스텀 공휴일은 대체휴일 계산에서 제외
+        // 싱가포르는 일요일 → 월요일 (토요일은 대체휴일 없음)
+        if (!isNoSubstituteCustomHoliday) {
+          const subs = getSGSubstituteDates(baseHolidaysMap, hd);
           for (const s of subs) {
             if (format(s, 'yyyy-MM-dd') === key) return true;
           }

@@ -168,10 +168,14 @@ export function isHoliday(country: string, input: string | Date): boolean {
     if (rule.type === 'hijri' && rule.hijriMonth && rule.hijriDay && rule.expectMonth !== undefined && rule.expectDay !== undefined) {
       // 예상일로 히즈리 연도 추정
       const approxDate = new Date(year, rule.expectMonth - 1, rule.expectDay);
+      
       const { year: hijriYear } = gregorianToHijri(approxDate);
+      
       // 히즈리력 → 그레고리력 변환
       const hijriDate = hijriToGregorian(hijriYear, rule.hijriMonth, rule.hijriDay);
+      
       const hijriKey = format(hijriDate, 'yyyy-MM-dd');
+      
       if (baseHolidaysMap[hijriKey]) {
         baseHolidaysMap[hijriKey] = baseHolidaysMap[hijriKey] + ' + ' + rule.name;
       } else {

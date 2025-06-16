@@ -15,7 +15,13 @@ export function hijriToGregorian(
   hijriDay: number
 ): Date {
   const hd = new HijriDate(hijriYear, hijriMonth, hijriDay);
-  return hd.toGregorian();
+  const date = hd.toGregorian();
+  // UTC 기준으로 변환된 날짜에 하루를 더함
+  const nextDay = new Date(date.getTime() + 24 * 60 * 60 * 1000);
+  // 현지 시간으로 조정 (UTC+8)
+  const localDate = new Date(nextDay.getTime() + 8 * 60 * 60 * 1000);
+  // 날짜만 추출 (시간 정보 제거)
+  return new Date(localDate.getFullYear(), localDate.getMonth(), localDate.getDate());
 }
 
 /**
@@ -24,5 +30,9 @@ export function hijriToGregorian(
  * @returns    히즈리력 연도·월·일 객체
  */
 export function gregorianToHijri(date: Date): { year: number; month: number; day: number } {
-  return toHijri(date);
+  // 현지 시간으로 조정 (UTC+8)
+  const localDate = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+  // 날짜만 추출 (시간 정보 제거)
+  const dateOnly = new Date(localDate.getFullYear(), localDate.getMonth(), localDate.getDate());
+  return toHijri(dateOnly);
 }

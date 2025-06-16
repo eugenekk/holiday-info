@@ -182,6 +182,17 @@ export function isHoliday(country: string, input: string | Date): boolean {
       }
       continue;
     }
+    // type이 'data'인 경우는 날짜 리스트를 그대로 사용
+    if (rule.type === 'data' && rule.data) {
+      for (const dateStr of rule.data) {
+        if (baseHolidaysMap[dateStr]) {
+          baseHolidaysMap[dateStr] = baseHolidaysMap[dateStr] + ' + ' + rule.name;
+        } else {
+          baseHolidaysMap[dateStr] = rule.name;
+        }
+      }
+      continue;
+    }
     // 나머지 일반 규칙 처리
     const hd = computeRuleDate(rule, year);
     const hKey = format(hd, 'yyyy-MM-dd');

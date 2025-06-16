@@ -18,6 +18,6 @@ describe('Hari Raya Puasa 테스트', () => {
   });
 
   it('2026년 Hari Raya Puasa는 3월 20일이다', () => {
-    expect(isHoliday('sg', '2025-03-20')).toBe(true);
+    expect(isHoliday('sg', '2026-03-20')).toBe(true);
   });
 }); 

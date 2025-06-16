@@ -31,18 +31,18 @@
   },
   {
     "name": "Good Friday",
-    "type": "special"
+    "type": "easter"
   },
   {
     "name": "Easter Saturday",
-    "type": "special"
+    "type": "easter"
   },
   {
     "name": "Easter Sunday",
-    "type": "special"
+    "type": "easter"
   },
   {
     "name": "Easter Monday",
-    "type": "special"
+    "type": "easter"
   }
 ]

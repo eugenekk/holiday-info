@@ -18,10 +18,10 @@ import {
   getSGSubstituteDates
 } from './substitutes';
 import {
-  addLunarNewYearEntries,
   addAustralianEasterEntries,
   addSingaporeEasterEntries
-} from './specials';
+} from './easter';
+import { addKrLunarNewYearEntries, addSgLunarNewYearEntries } from "./lunar-year";
 
 /**
  * 기본 휴일 정보로 초기화하는 함수
@@ -126,19 +126,22 @@ function computeRuleDate(rule: HolidayRule, year: number): Date {
     // lunar2solar(year, 월, 일) → { cYear, cMonth, cDay }
     const { cYear, cMonth, cDay } = lunar2solar(year, rule.month!, rule.day!);
     return new Date(cYear, cMonth - 1, cDay);
-  } else if (rule.type === 'special') {
-    // type === 'special' - 동적 계산이 필요한 공휴일 (부활절 등)
+  } else if (rule.type === 'easter') {
+    // type === 'easter' - 동적 계산이 필요한 공휴일 (부활절 등)
     // 별도 처리하므로 여기서는 에러 발생
-    throw new Error(`Special holiday "${rule.name}" should be handled separately`);
+    throw new Error(`Easter holiday "${rule.name}" should be handled separately`);
   } else if (rule.type === 'hijri') {
     // type === 'hijri' - 히즈리력 변환이 필요한 공휴일
     // 별도 처리하므로 여기서는 에러 발생
     throw new Error(`Hijri holiday "${rule.name}" should be handled separately`);
-  } else {
-    // type === '' (빈 스트링) - 특별 처리가 필요한 공휴일
-    // 현재는 고정 날짜로 처리 (향후 이슬람력, 힌두력 등 추가 가능)
-    return new Date(year, rule.month! - 1, rule.day!);
+  } else if (rule.type === 'lunar-year') {
+    // type === 'lunar-year' - 동적 계산이 필요한 공휴일 (설날 연휴 등)
+    // 별도 처리하므로 여기서는 에러 발생
+    throw new Error(`lunar-year holiday "${rule.name}" should be handled separately`);
   }
+  // type === '' (빈 스트링) - 특별 처리가 필요한 공휴일
+  // 현재는 고정 날짜로 처리 (향후 이슬람력, 힌두력 등 추가 가능)
+  return new Date(year, rule.month! - 1, rule.day!);
 }
 
 /**
@@ -156,26 +159,22 @@ export function isHoliday(country: string, input: string | Date): boolean {
   const baseHolidaysMap: Record<string, string> = {};
   
   for (const rule of rules) {
-    // rule이 음력 1/1인 경우는 헬퍼로 따로 처리
-    if (rule.type === 'lunar' && rule.month === 1 && rule.day === 1) {
+    // rule이 lunar-year인 경우는 헬퍼로 따로 처리
+    if (rule.type === 'lunar-year') {
       continue;
     }
-    // type이 'special'인 경우는 별도 헬퍼 함수로 처리하므로 건너뛰기
-    if (rule.type === 'special') {
+    // type이 'easter'인 경우는 별도 헬퍼 함수로 처리하므로 건너뛰기
+    if (rule.type === 'easter') {
       continue;
     }
     // type이 'hijri'인 경우는 단순화된 구조로 처리
     if (rule.type === 'hijri' && rule.hijriMonth && rule.hijriDay && rule.expectMonth !== undefined && rule.expectDay !== undefined) {
       // 예상일로 히즈리 연도 추정
       const approxDate = new Date(year, rule.expectMonth - 1, rule.expectDay);
-      
       const { year: hijriYear } = gregorianToHijri(approxDate);
-      
       // 히즈리력 → 그레고리력 변환
       const hijriDate = hijriToGregorian(hijriYear, rule.hijriMonth, rule.hijriDay);
-      
       const hijriKey = format(hijriDate, 'yyyy-MM-dd');
-      
       if (baseHolidaysMap[hijriKey]) {
         baseHolidaysMap[hijriKey] = baseHolidaysMap[hijriKey] + ' + ' + rule.name;
       } else {
@@ -199,7 +198,7 @@ export function isHoliday(country: string, input: string | Date): boolean {
     const { cYear, cMonth, cDay } = lunar2solar(year, 1, 1);
     const newYearDate = new Date(cYear, cMonth - 1, cDay);
     // 2-2) 헬퍼 호출: baseHolidaysMap, 설날 날짜(Date), "설날" 이름
-    addLunarNewYearEntries(baseHolidaysMap, newYearDate, '설날');
+    addKrLunarNewYearEntries(baseHolidaysMap, newYearDate, '설날');
   }
 
   // (3) AU인 경우, 부활절 관련 4개 공휴일을 헬퍼로 추가
@@ -209,18 +208,9 @@ export function isHoliday(country: string, input: string | Date): boolean {
 
   // (4) SG인 경우, 음력 공휴일들과 부활절 관련 공휴일 추가 처리
   if (country.toLowerCase() === 'sg') {
-    // Chinese New Year Day (음력 1월 1일) 추가
-    const { cYear: cnyYear, cMonth: cnyMonth, cDay: cnyDay } = lunar2solar(year, 1, 1);
-    const chineseNewYearDate = new Date(cnyYear, cnyMonth - 1, cnyDay);
-    const chineseNewYearKey = format(chineseNewYearDate, 'yyyy-MM-dd');
-    baseHolidaysMap[chineseNewYearKey] = 'Chinese New Year\'s Day';
-
-    // Vesak Day (음력 4월 15일) 추가
-    const { cYear: vesakYear, cMonth: vesakMonth, cDay: vesakDay } = lunar2solar(year, 4, 15);
-    const vesakDate = new Date(vesakYear, vesakMonth - 1, vesakDay);
-    const vesakKey = format(vesakDate, 'yyyy-MM-dd');
-    baseHolidaysMap[vesakKey] = 'Vesak Day';
-    
+    // Lunar New Year 연휴 추가
+    addSgLunarNewYearEntries(baseHolidaysMap, year);
+       
     // Good Friday (부활절 기반) 추가
     addSingaporeEasterEntries(baseHolidaysMap, year);
   }
@@ -375,3 +365,4 @@ export function isHoliday(country: string, input: string | Date): boolean {
 
   return false;
 }
+

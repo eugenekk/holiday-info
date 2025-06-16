@@ -1,5 +1,7 @@
+
 import { format } from 'date-fns';
-import { easter } from 'date-easter';
+import { lunar2solar } from 'solarlunar'; // npm install solarlunar
+
 
 /**
  * baseHolidaysMap에 "설날(음력 1/1)" 당일과
@@ -9,7 +11,7 @@ import { easter } from 'date-easter';
  * @param date      설날 당일(Date 객체, computeRuleDate로 구해진 값) - 음력 1월 1일에 해당하는 양력 날짜
  * @param name      "설날"과 같이 공휴일 이름
  */
-export function addLunarNewYearEntries(baseMap: Record<string, string>, date: Date, name: string) {
+export function addKrLunarNewYearEntries(baseMap: Record<string, string>, date: Date, name: string) {
   // 한국의 설날 연휴는 음력 1월 1일을 기준으로 전날-당일-다음날 총 3일
   // 하지만 공식적인 "설날"은 가운데 날(당일)이 아니라 일요일이 아닌 날로 조정될 수 있음
   
@@ -76,48 +78,23 @@ export function addLunarNewYearEntries(baseMap: Record<string, string>, date: Da
   }
 }
 
-/**
- * 호주 부활절 관련 공휴일을 baseMap에 추가
- * Good Friday, Easter Saturday, Easter Sunday, Easter Monday
- */
-export function addAustralianEasterEntries(baseMap: Record<string, string>, year: number) {
-  const easterData = easter(year); // { year: 2025, month: 3, day: 20 } (month는 0-based가 아님)
-  const easterDate = new Date(easterData.year, easterData.month - 1, easterData.day); // month를 0-based로 변환
-  
-  // Good Friday: 부활절 2일 전 (금요일)
-  const goodFriday = new Date(easterDate);
-  goodFriday.setDate(goodFriday.getDate() - 2);
-  const goodFridayKey = format(goodFriday, 'yyyy-MM-dd');
-  baseMap[goodFridayKey] = 'Good Friday';
-  
-  // Easter Saturday: 부활절 1일 전 (토요일)
-  const easterSaturday = new Date(easterDate);
-  easterSaturday.setDate(easterSaturday.getDate() - 1);
-  const easterSaturdayKey = format(easterSaturday, 'yyyy-MM-dd');
-  baseMap[easterSaturdayKey] = 'Easter Saturday';
-  
-  // Easter Sunday: 부활절 당일 (일요일)
-  const easterSundayKey = format(easterDate, 'yyyy-MM-dd');
-  baseMap[easterSundayKey] = 'Easter Sunday';
-  
-  // Easter Monday: 부활절 1일 후 (월요일)
-  const easterMonday = new Date(easterDate);
-  easterMonday.setDate(easterMonday.getDate() + 1);
-  const easterMondayKey = format(easterMonday, 'yyyy-MM-dd');
-  baseMap[easterMondayKey] = 'Easter Monday';
-}
+
 
 /**
- * 싱가포르 부활절 관련 공휴일을 baseMap에 추가
- * Good Friday 하루만 공휴일 (부활절 당일과 전후일은 공휴일 아님)
+ * 싱가포르의 설날 연휴를 추가
+ * @param year 연도
+ * @param baseHolidaysMap 공휴일 맵
  */
-export function addSingaporeEasterEntries(baseMap: Record<string, string>, year: number) {
-  const easterData = easter(year); // { year: 2025, month: 3, day: 20 } (month는 0-based가 아님)
-  const easterDate = new Date(easterData.year, easterData.month - 1, easterData.day); // month를 0-based로 변환
-  
-  // Good Friday: 부활절 2일 전 (금요일)
-  const goodFriday = new Date(easterDate);
-  goodFriday.setDate(goodFriday.getDate() - 2);
-  const goodFridayKey = format(goodFriday, 'yyyy-MM-dd');
-  baseMap[goodFridayKey] = 'Good Friday';
-} 
+export function addSgLunarNewYearEntries( baseHolidaysMap: Record<string, string>, year: number) {
+  // 음력 1월 1일
+  const { cYear: cnyYear, cMonth: cnyMonth, cDay: cnyDay } = lunar2solar(year, 1, 1);
+  const chineseNewYearDate = new Date(cnyYear, cnyMonth - 1, cnyDay);
+  const chineseNewYearKey = format(chineseNewYearDate, 'yyyy-MM-dd');
+  baseHolidaysMap[chineseNewYearKey] = 'Lunar New Year\'s Day';
+
+  // 음력 1월 2일
+  const { cYear: cnyYear2, cMonth: cnyMonth2, cDay: cnyDay2 } = lunar2solar(year, 1, 2);
+  const chineseNewYearDate2 = new Date(cnyYear2, cnyMonth2 - 1, cnyDay2);
+  const chineseNewYearKey2 = format(chineseNewYearDate2, 'yyyy-MM-dd');
+  baseHolidaysMap[chineseNewYearKey2] = 'Lunar New Year\'s Day';
+}

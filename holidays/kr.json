@@ -7,7 +7,7 @@
   },
   {
     "name": "구정",
-    "type": "lunar",
+    "type": "lunar-year",
     "month": 1,
     "day": 1
   },

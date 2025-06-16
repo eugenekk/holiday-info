@@ -5,16 +5,23 @@
     "month": 1,
     "day": 1
   },
-
+  {
+    "name": "Lunar New Year's Day",
+    "type": "lunar-year",
+    "month": 1,
+    "day": 1
+  },
   {
     "name": "Hari Raya Puasa",
-    "type": "",
-    "month": 3,
-    "day": 31
+    "type": "hijri",
+    "hijriMonth": 10,
+    "hijriDay": 1,
+    "expectMonth": 4,
+    "expectDay": 15
   },
   {
     "name": "Good Friday",
-    "type": "special"
+    "type": "easter"
   },
   {
     "name": "Labour Day",
@@ -23,6 +30,12 @@
     "day": 1
   },
 
+  {
+    "name": "Vesak Day",
+    "type": "lunar",
+    "month": 4,
+    "day": 15
+  },
   {
     "name": "Hari Raya Haji",
     "type": "hijri",
@@ -36,12 +49,6 @@
     "type": "fixed",
     "month": 8,
     "day": 9
-  },
-  {
-    "name": "Deepavali",
-    "type": "",
-    "month": 10,
-    "day": 20
   },
   {
     "name": "Christmas Day",

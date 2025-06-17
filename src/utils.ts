@@ -16,7 +16,8 @@ import {
   getJPSubstituteDates,
   getKRSubstituteDates,
   getAUSubstituteDates,
-  getSGSubstituteDates
+  getSGSubstituteDates,
+  getTWSubstituteDates
 } from './substitutes';
 import {
   addAustralianEasterEntries,
@@ -389,8 +390,33 @@ export function isHoliday(country: string, input: string | Date): boolean {
         }
       }
       break;
-  }
 
+    case 'tw':
+      for (const [hKey] of Object.entries(baseHolidaysMap)) {
+        const hd = parseISO(hKey);
+      
+        // 이 날짜가 substituteHoliday: false인 커스텀 공휴일인지 확인
+        const isNoSubstituteCustomHoliday = customRules.some(cr => {
+          if (cr.substituteHoliday === false) {
+            // recurring 필터링
+            if (cr.recurring === false && cr.year !== year) {
+              return false;
+            }
+            const customHolidayDate = new Date(year, cr.month - 1, cr.day);
+            return format(customHolidayDate, 'yyyy-MM-dd') === hKey;
+          }
+          return false;
+        });
+      
+        // substituteHoliday: false인 커스텀 공휴일은 대체휴일 계산에서 제외
+        if (!isNoSubstituteCustomHoliday) {
+          const subs = getTWSubstituteDates(baseHolidaysMap, hd);
+          for (const s of subs) {
+            if (format(s, 'yyyy-MM-dd') === key) return true;
+          }
+        }
+      }
+    }
   return false;
 }
 

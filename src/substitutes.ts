@@ -216,6 +216,60 @@ export function getKRSubstituteDates(
   }
 
   return result;
-} 
+}
+
+/**
+ * TW(대만) 대체공휴일 규칙
+ * 1. 어린이날(4월 4일)과 청명절(4월 4일 또는 5일)이 겹치는 경우:
+ *    - 4월 3일을 대체휴일로 지정
+ *    - 단, 어린이날 겸 청명이 목요일인 경우는 4월 5일을 대체휴일로 지정
+ * 2. 토요일과 공휴일이 겹치면 금요일을 대체휴일로 지정
+ * 3. 일요일과 공휴일이 겹치면 월요일을 대체휴일로 지정
+ * 
+ * @param baseHolidaysMap  "YYYY-MM-DD" → "공휴일 이름" 또는 "이름1 + 이름2" 형태 맵
+ * @param holidayDate      실제 기념일(Date 객체)
+ * @returns Date[]         대체공휴일 날짜 목록
+ */
+export function getTWSubstituteDates(
+  baseHolidaysMap: Record<string, string>,
+  holidayDate: Date
+): Date[] {
+  const result: Date[] = [];
+  const key0 = format(holidayDate, 'yyyy-MM-dd');
+  const dow = holidayDate.getDay(); // 0=일, 1=월, …, 6=토
+
+  // 어린이날과 청명절이 겹치는 경우 처리
+  const names = baseHolidaysMap[key0] ?? '';
+  const isChildrenDay = names.includes('兒童節');
+  const isQingming = names.includes('清明節');
+  const isOverlapping = isChildrenDay && isQingming;
+
+  if (isOverlapping) {
+    // 어린이날 겸 청명이 목요일인 경우
+    if (dow === 4) { // 목요일
+      const substituteDate = new Date(holidayDate);
+      substituteDate.setDate(holidayDate.getDate() + 1); // 4월 5일
+      result.push(substituteDate);
+    } else {
+      // 그 외의 경우 4월 3일
+      const substituteDate = new Date(holidayDate);
+      substituteDate.setDate(holidayDate.getDate() - 1); // 4월 3일
+      result.push(substituteDate);
+    }
+  }
+
+  // 토요일/일요일 대체 공휴일 처리
+  if (dow === 6) { // 토요일
+    const substituteDate = new Date(holidayDate);
+    substituteDate.setDate(holidayDate.getDate() - 1); // 금요일
+    result.push(substituteDate);
+  } else if (dow === 0) { // 일요일
+    const substituteDate = new Date(holidayDate);
+    substituteDate.setDate(holidayDate.getDate() + 1); // 월요일
+    result.push(substituteDate);
+  }
+
+  return result;
+}
 
 // TW(대만) 대체공휴일 규칙이 없음 -> 정부의 발표를 참조

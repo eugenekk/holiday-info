@@ -1,0 +1,72 @@
+[
+  {
+    "name": "元旦",
+    "type": "fixed",
+    "month": 1,
+    "day": 1
+  },
+  {
+    "name": "春節",
+    "type": "lunar-year",
+    "month": 1,
+    "day": 1
+  },
+  {
+    "name": "和平紀念日",
+    "type": "fixed",
+    "month": 2,
+    "day": 28
+  },
+  {
+    "name": "兒童節",
+    "type": "fixed",
+    "month": 4,
+    "day": 4
+  },
+  {
+    "name": "清明節",
+    "type": "astronomy"
+  },
+  {
+    "name": "勞動節",
+    "type": "fixed",
+    "month": 5,
+    "day": 1
+  },
+  {
+    "name": "端午節",
+    "type": "lunar",
+    "month": 5,
+    "day": 5
+  },
+  {
+    "name": "中秋節",
+    "type": "lunar",
+    "month": 8,
+    "day": 15
+  },
+  {
+    "name": "教師節",
+    "type": "fixed",
+    "month": 9,
+    "day": 28
+  },
+  {
+    "name": "雙十節",
+    "type": "fixed",
+    "month": 10,
+    "day": 10
+  },
+  {
+    "name": "光復節",
+    "type": "fixed",
+    "month": 10,
+    "day": 25
+  },
+  {
+    "name": "行憲紀念日",
+    "type": "fixed",
+    "month": 12,
+    "day": 25
+  }
+]

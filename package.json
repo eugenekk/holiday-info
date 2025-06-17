@@ -26,6 +26,8 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "astronomia": "^4.1.1",
+    "astronomy-engine": "^2.1.19",
     "date-easter": "^1.0.3",
     "date-fns": "^4.1.0",
     "hijri-date": "^0.2.2",

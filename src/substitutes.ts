@@ -217,3 +217,5 @@ export function getKRSubstituteDates(
 
   return result;
 } 
+
+// TW(대만) 대체공휴일 규칙이 없음 -> 정부의 발표를 참조

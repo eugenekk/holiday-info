@@ -7,6 +7,7 @@ import jpHolidays from '../holidays/jp.json';
 import krHolidays from '../holidays/kr.json';
 import auHolidays from '../holidays/au.json';
 import sgHolidays from '../holidays/sg.json';
+import twHolidays from '../holidays/tw.json';
 import { _getCustomHolidaysForUtils, customHolidays } from './custom';
 import { hijriToGregorian, gregorianToHijri } from './hijri';
 import {  HolidayRule } from './types';
@@ -21,7 +22,8 @@ import {
   addAustralianEasterEntries,
   addSingaporeEasterEntries
 } from './easter';
-import { addKrLunarNewYearEntries, addSgLunarNewYearEntries } from "./lunar-year";
+import { addKrLunarNewYearEntries, addSgLunarNewYearEntries, addTwLunarNewYearEntries } from "./lunar-year";
+import { getQingming } from "./astronomy";
 
 /**
  * 기본 휴일 정보로 초기화하는 함수
@@ -56,6 +58,9 @@ export function _getBaseRulesForUtils(country: string): HolidayRule[] {
       break;
     case 'sg':
       rules = sgHolidays as HolidayRule[];
+      break;
+    case 'tw':
+      rules = twHolidays as HolidayRule[];
       break;
     default:
       throw new Error(`지원하지 않는 country 코드: ${country}`);
@@ -126,6 +131,13 @@ function computeRuleDate(rule: HolidayRule, year: number): Date {
     // lunar2solar(year, 월, 일) → { cYear, cMonth, cDay }
     const { cYear, cMonth, cDay } = lunar2solar(year, rule.month!, rule.day!);
     return new Date(cYear, cMonth - 1, cDay);
+  }  else if (rule.type === 'astronomy') {
+    // type === 'astronomy' (TW)
+    if(rule.name === '清明節') { // tw 의 청명절
+      // 청명 찾기
+      const qingming = getQingming(year)
+      return qingming;
+    }
   } else if (rule.type === 'easter') {
     // type === 'easter' - 동적 계산이 필요한 공휴일 (부활절 등)
     // 별도 처리하므로 여기서는 에러 발생
@@ -224,6 +236,11 @@ export function isHoliday(country: string, input: string | Date): boolean {
        
     // Good Friday (부활절 기반) 추가
     addSingaporeEasterEntries(baseHolidaysMap, year);
+  }
+
+  // (5) TW인 경우, 설날 연휴 추가
+  if (country.toLowerCase() === 'tw') {
+    addTwLunarNewYearEntries(baseHolidaysMap, year);
   }
 
   // (2) 실제 기념일인지 체크

@@ -1,4 +1,3 @@
-
 import { format } from 'date-fns';
 import { lunar2solar } from 'solarlunar'; // npm install solarlunar
 
@@ -97,4 +96,40 @@ export function addSgLunarNewYearEntries( baseHolidaysMap: Record<string, string
   const chineseNewYearDate2 = new Date(cnyYear2, cnyMonth2 - 1, cnyDay2);
   const chineseNewYearKey2 = format(chineseNewYearDate2, 'yyyy-MM-dd');
   baseHolidaysMap[chineseNewYearKey2] = 'Lunar New Year\'s Day';
+}
+
+
+// 대만 설날 연휴
+export function addTwLunarNewYearEntries(baseHolidaysMap: Record<string, string>, year: number) {
+  // 음력 1월 1일
+  const { cYear: cnyYear, cMonth: cnyMonth, cDay: cnyDay } = lunar2solar(year, 1, 1);
+  const chineseNewYearDate = new Date(cnyYear, cnyMonth - 1, cnyDay);
+
+  // 설날 전 2일
+  const twoDaysBefore = new Date(chineseNewYearDate);
+  twoDaysBefore.setDate(chineseNewYearDate.getDate() - 2);
+  const twoDaysBeforeKey = format(twoDaysBefore, 'yyyy-MM-dd');
+  baseHolidaysMap[twoDaysBeforeKey] = '春節';
+
+  // 설날 전 1일
+  const oneDayBefore = new Date(chineseNewYearDate);
+  oneDayBefore.setDate(chineseNewYearDate.getDate() - 1);
+  const oneDayBeforeKey = format(oneDayBefore, 'yyyy-MM-dd');
+  baseHolidaysMap[oneDayBeforeKey] = '春節';
+
+  // 설날 당일
+  const chineseNewYearKey = format(chineseNewYearDate, 'yyyy-MM-dd');
+  baseHolidaysMap[chineseNewYearKey] = '春節';
+
+  // 설날 후 1일
+  const oneDayAfter = new Date(chineseNewYearDate);
+  oneDayAfter.setDate(chineseNewYearDate.getDate() + 1);
+  const oneDayAfterKey = format(oneDayAfter, 'yyyy-MM-dd');
+  baseHolidaysMap[oneDayAfterKey] = '春節';
+
+  // 설날 후 2일
+  const twoDaysAfter = new Date(chineseNewYearDate);
+  twoDaysAfter.setDate(chineseNewYearDate.getDate() + 2);
+  const twoDaysAfterKey = format(twoDaysAfter, 'yyyy-MM-dd');
+  baseHolidaysMap[twoDaysAfterKey] = '春節';
 }
